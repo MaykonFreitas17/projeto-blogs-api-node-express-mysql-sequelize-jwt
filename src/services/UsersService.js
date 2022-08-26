@@ -11,6 +11,10 @@ const login = async (email, password) => {
   return true;
 };
 
+// const create = (user) => {
+//   const { displayName, email, password, image } = user;
+// };
+
 module.exports = {
   login,
 };
