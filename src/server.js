@@ -9,8 +9,10 @@ app.get('/', (_request, response) => {
   response.send();
 });
 
+const LoginRouter = require('./routes/LoginRouter');
 const UserRouter = require('./routes/UserRouter');
 
-app.use('/login', UserRouter);
+app.use('/login', LoginRouter);
+app.use('/user', UserRouter);
 
 app.listen(port, () => console.log('ouvindo porta', port));

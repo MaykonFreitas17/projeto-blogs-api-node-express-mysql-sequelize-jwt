@@ -1,4 +1,5 @@
 const { User } = require('../database/models');
+const userValidate = require('../middlewares/userValidation');
 
 const login = async (email, password) => {
   if (email === '' || password === '') {
@@ -11,10 +12,21 @@ const login = async (email, password) => {
   return true;
 };
 
-// const create = (user) => {
-//   const { displayName, email, password, image } = user;
-// };
+const create = async (user) => {
+  const { email } = user;
+
+  const validate = userValidate(user);
+  const { code, message } = validate;
+  if (code && message) return validate;
+
+  const userWithEmail = await User.findOne({ where: { email } });
+  if (userWithEmail) return { code: 409, message: 'User already registered' };
+
+  await User.create(user);
+  return true;
+};
 
 module.exports = {
   login,
+  create,
 };
