@@ -11,12 +11,12 @@ const postValidate = (post) => {
   return isValid.value;
 };
 
-const post = {
-  title: '',
-  content: 'The whole text for the blog post goes here in this key',
-  categoryIds: [1, 2],
-};
+// const post = {
+//   title: '',
+//   content: 'The whole text for the blog post goes here in this key',
+//   categoryIds: [1, 2],
+// };
 
-console.log(postValidate(post));
+// console.log(postValidate(post));
 
 module.exports = postValidate;
