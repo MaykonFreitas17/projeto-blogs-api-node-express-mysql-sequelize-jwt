@@ -51,4 +51,33 @@ const create = async (user, post) => {
   return newPost;
 };
 
-module.exports = { create };
+const customUser = (user) => {
+  const userFormat = {
+    id: user.id,
+    displayName: user.displayName,
+    email: user.email,
+    image: user.image,
+  };
+  return userFormat;
+};
+
+const getAll = async () => {
+  const allPosts = BlogPost.findAll({ include: [{ model: User, as: 'user' }] })
+  .then(async (posts) => {
+    const result = posts.map(async (post) => {
+      const { id, title, content, userId, published, updated } = post;
+      const postCategories = await PostCategory.findAll({ where: { postId: id } });
+      const categoriesList = postCategories.map(async (category) => {
+        const { categoryId } = category;
+        return Category.findAll({ where: { id: categoryId } });
+      });
+      const c = await Promise.all(categoriesList);
+      const user = customUser(post.user);
+      return { id, title, content, userId, published, updated, user, categories: c[0] };
+    });
+    return Promise.all(result);
+  });
+  return allPosts;
+};
+
+module.exports = { create, getAll };
