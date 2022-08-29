@@ -80,4 +80,23 @@ const getAll = async () => {
   return allPosts;
 };
 
-module.exports = { create, getAll };
+const getById = async (id) => {
+  const postById = BlogPost.findOne({
+    where: { id }, include: [{ model: User, as: 'user' }],
+  })
+  .then(async (post) => {
+    if (!post) return { code: 404, message: 'Post does not exist' };
+    const { title, content, userId, published, updated } = post;
+    const postCategories = await PostCategory.findAll({ where: { postId: id } });
+    const categories = postCategories.map(async (category) => {
+      const { categoryId } = category;
+      return Category.findAll({ where: { id: categoryId } });
+    });
+    const c = await Promise.all(categories);
+    const user = customUser(post.user);
+    return { id: post.id, title, content, userId, published, updated, user, categories: c[0] };
+  });
+  return postById;
+};
+
+module.exports = { create, getAll, getById };
