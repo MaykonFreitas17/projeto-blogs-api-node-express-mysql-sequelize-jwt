@@ -99,4 +99,32 @@ const getById = async (id) => {
   return postById;
 };
 
-module.exports = { create, getAll, getById };
+const validateUpdate = async (id, token, title, content) => {
+  const { user } = await getById(id);
+  console.log(token);
+  if (user.email !== token.email) {
+    return { code: 401, message: 'Unauthorized user' };
+  }
+
+  if (title === '' || content === '') {
+    return { code: 400, message: 'Some required fields are missing' };
+  }
+
+  return true;
+};
+
+const update = async (id, token, title, content) => {
+  const validate = await validateUpdate(id, token, title, content);
+  const { code, message } = validate;
+  console.log(validate);
+  if (code && message) return validate;
+
+  await BlogPost.update(
+    { title, content },
+    { where: { id } },
+  );
+
+  return getById(id);
+};
+
+module.exports = { create, getAll, getById, update };
